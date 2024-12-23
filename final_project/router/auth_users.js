@@ -31,7 +31,7 @@ if(!user) {
     To access
 */
 let accessToken = jwt.sign(
-   {data:user}, 'access', 
+   {data:user}, privateKeys, 
    {expiresIn: 60*5 } 
 );
 
