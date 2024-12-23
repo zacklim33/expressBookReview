@@ -5,14 +5,31 @@ const regd_users = express.Router();
 
 const privateKeys="handleAccess";
 
-let users = [];
+//users is an array to store all users who registered @ `/register`
+let users = []; 
 
+
+// check if the username is valid
 const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
+
+ //no user name is entered
+  if(!username) return false;
+
+//check against database if userName exist
+  return users.some( (usr) => usr.userName ===username);
 }
 
-const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
+//check user password against the database
+const authenticatedUser = (username,password)=>{ 
+
+  //write code to check if username and password match the one we have in records.
+  const user=users.find( (someOne) => someOne.userName = username);
+  if(user.password == password) { 
+    return true;
+  } else {
+    return false;
+  } 
+
 }
 
 //End for registered users to login and become authenticated
@@ -22,13 +39,16 @@ let user = req.body.username ;
 let pwd = req.body.password;
 
 ////if no user was entered, return error code
-if(!user) {
-  return res.send.status(401).json({message: "Body is empty. No user"});
+if( !user || !pwd) {
+  return res.send.status(401).json({message: "Body is empty. No user or password entered"});
 }
+
+//check for correct credentials
+if( !authenticatedUser(user,pwd) ) return res.status(401).json({message: "Invalid credentials"});
+
 
 /*  Syntax for jwt.sign(payload, secretOrPrivateKey, [options, callback]);
     options: expiresIn, etc ; callback: function; 
-    To access
 */
 let accessToken = jwt.sign(
    {data:user}, privateKeys, 
@@ -38,8 +58,7 @@ let accessToken = jwt.sign(
 //current session to store the jwt token
 req.session.authorization = { accessToken };
 
-
-  return res.status(300).json({message: "Yet to be implemented"});
+return res.status(200).json({token: accessToken});
 
 });
 
