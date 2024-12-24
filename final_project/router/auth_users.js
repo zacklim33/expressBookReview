@@ -112,16 +112,6 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
 });
 
 
-/*
-{
-"userName": "george88",
-"password": "forgetMeNot!4ever",
-"email": "george88@gmail.com",
-"review": "This was one of the best book I had ever read. "
-}
-
-*/
-
 regd_users.delete("/auth/review/:isbn", (req, res) => {
 
   let isbn = req.params.isbn;

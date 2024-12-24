@@ -8,7 +8,7 @@ const privateKeys="handleAccess";
 //to import routes dedicated to customer authentication 
 const customer_routes = require('./router/auth_users.js').authenticated;
 
-//to import routes for other general functions
+//to import routes for general functions
 const genl_routes = require('./router/general.js').general;
 
 //create an express server instance
@@ -28,14 +28,11 @@ app.use("/customer/auth/*", function auth(req,res,next){
 console.log(req.session);
 
 //Get jwt token from current session after user login
-    //An alternative: let token = req.headers.authorization; 
-// let token = req.header('Authorization').replace('Bearer ', '');
-//.replace("Bearer ", '');
-
 //To test where the JWT token is stored at: either at the req session or req header. 
 //let token = req.session.authorization?.accessToken || req.header('Authorization')?.replace('Bearer ', '');
 let token = req.session.authorization['accessToken'];
 
+//debugging to see if token is accessible from req.session
 console.log("token:" + token );
 
 //no token detected
@@ -48,8 +45,10 @@ try {
 
     //to extract userName from token payload, defined in `/login` endpoint
     const userName = decoded.data;
+
+    //for debugging
     console.log("@/auth/*,  userName:" + userName );
-    
+
     //move on to next middleware / route handler
     next();
 
@@ -58,7 +57,6 @@ try {
 
    //invalid or expired token; require new login session 
   return res.status(401).json( {message: "Invalid token" });
-
 }
 
 
