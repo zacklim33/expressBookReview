@@ -24,9 +24,17 @@ app.use("/customer",session({secret:privateKeys, resave: true, saveUninitialized
 //Middleware route for user authenication based on auth token @ /customer/auth
 app.use("/customer/auth/*", function auth(req,res,next){
 
+//check if user is authenticated in login session, and has a JWT token in the request header
+console.log(req.session);
+
 //Get jwt token from current session after user login
     //An alternative: let token = req.headers.authorization; 
-let token = req.headers.authorization.replace("Bearer ", '');
+// let token = req.header('Authorization').replace('Bearer ', '');
+//.replace("Bearer ", '');
+
+let token = req.session.authorization['accessToken'];
+
+console.log("token:" + token );
 
 //no token detected
 if(!token) return res.status(401).json({message: "Missing security token. Unauthorized login"}) ;
@@ -41,6 +49,8 @@ try {
     next();
 
 } catch (error){
+   console.error("Token verification failed:", error.message);
+
    //invalid or expired token; require new login session 
   return res.status(401).json( {message: "Invalid token" });
 

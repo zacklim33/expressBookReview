@@ -111,7 +111,7 @@ public_users.post("/register", (req,res) => {
   */
 
   //get data from request body sent from client
-  console.log(req.body);
+  console.log("hello from register "+ req.body);
   const {userName, password, email } = req.body;
 
   //check if required fields are provided
@@ -123,7 +123,7 @@ public_users.post("/register", (req,res) => {
   if(users.includes(userName) || users.includes(email)) {
     return res.status(400).json({message: `${userName} or ${email} is already used. Pls change.`});
   } else{
-    users.push({userName: {userName}, email: {email}, password: {password} });
+    users.push( {userName, email, password});
     return res.status(200).json({message: "User is registered successfully."});
   }
     

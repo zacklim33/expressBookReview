@@ -2,8 +2,8 @@
 // containing numerical keys and nested objects (defined by {} );
 
 let books = {
-      1: {"author": "Chinua Achebe","title": "Things Fall Apart", "reviews": "Too long" },
-      2: {"author": "Hans Christian Andersen","title": "Fairy tales", "reviews": "Good for the kids" },
+      1: {"author": "Chinua Achebe","title": "Things Fall Apart", "reviews": {} },
+      2: {"author": "Hans Christian Andersen","title": "Fairy tales", "reviews": {} },
       3: {"author": "Dante Alighieri","title": "The Divine Comedy", "reviews": "Funny!" },
       4: {"author": "Unknown","title": "The Epic Of Gilgamesh", "reviews": "OK" },
       5: {"author": "Unknown","title": "The Book Of Job", "reviews": "Oh well..." },
