@@ -32,6 +32,8 @@ console.log(req.session);
 // let token = req.header('Authorization').replace('Bearer ', '');
 //.replace("Bearer ", '');
 
+//To test where the JWT token is stored at: either at the req session or req header. 
+//let token = req.session.authorization?.accessToken || req.header('Authorization')?.replace('Bearer ', '');
 let token = req.session.authorization['accessToken'];
 
 console.log("token:" + token );
@@ -42,9 +44,12 @@ if(!token) return res.status(401).json({message: "Missing security token. Unauth
 //check the validity of the token
 try {
     //check with privateKeys if token is valid  
-    const bVerified = jwt.verify(token,privateKeys);
-    req.user = bVerified;
+    const decoded = jwt.verify(token,privateKeys);
 
+    //to extract userName from token payload, defined in `/login` endpoint
+    const userName = decoded.data;
+    console.log("@/auth/*,  userName:" + userName );
+    
     //move on to next middleware / route handler
     next();
 

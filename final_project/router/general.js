@@ -1,6 +1,5 @@
 const express = require('express');
 
-
 let books = require("./booksdb.js");
 
 //to import isValid method and array of authenicated customers
@@ -100,18 +99,14 @@ public_users.get('/review/:isbn',function (req, res) {
 //Route handler for `/register` endpoint;  for new users registeration
 public_users.post("/register", (req,res) => {
   
-  
   /* Sample JSON data in request body 
-  {
-      "userName": "george88",
+  {   "userName": "george88",
       "password": "forgetMeNot!4ever",
       "email": "george88@gmail.com"
   }
-
   */
 
   //get data from request body sent from client
-  console.log("hello from register "+ req.body);
   const {userName, password, email } = req.body;
 
   //check if required fields are provided

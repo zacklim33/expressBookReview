@@ -18,7 +18,6 @@ const isValid = (username)=>{ //returns boolean
   return users.some( (usr) => usr.userName ===username);
 }
 
-
 //check user password against the database
 const authenticatedUser = (username,password)=>{ 
 
@@ -65,30 +64,52 @@ let accessToken = jwt.sign(
 );
 
 console.log(accessToken);
+
 //current session to store the jwt token
-req.session.authorization = { accessToken };
+req.session.authorization = { 
+  accessToken
+};
 
 return res.status(200).json({token: accessToken});
 
 });
 
-// Add a book review
+
+//Route handlder for endpoint `/customer/auth/review/*`; to add/modify a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  const isbn = req.params.isbn;
-  const review=req.body;
+  let isbn = req.params.isbn;
+  let review=req.body.review;
+
+  // to extract userName from accessToken
+  let token = req.session.authorization['accessToken'];
+  let userName = jwt.verify(token,privateKeys).data;
+  
+  //for debugging purposes
+  console.log("@add new review: " + userName + " review:" + review + "; isbn:" + isbn );
+
 
   if(!isbn) return res.status(400).json({message: "No ISBN code was input"});
-  
   if(!review) return res.status(400).json({message: "No review was input"});
 
-  books[isbn].reviews.push(review);
-  return res.status(200).json({message:"review added"});
+  //check if isbn exists in bookDB
+  if(books[isbn]) {
+
+    //if ISBN exist, then check if the user has made a book review.
+    //only 1 book review per user
+    if(books[isbn].reviews[userName]) {
+      
+      books[isbn].reviews[userName] = review;
+      return res.status(200).json({message:"Book review is modified."});
+     } else {
+      books[isbn].reviews[userName] = review;
+      return res.status(200).json({message:"Book review is saved."});
+     }
+    } else {
+
+    return res.status(404).json({message: "No book is found with ISBN:" + isbn})
+  }
 
 });
-
-module.exports.authenticated = regd_users;
-module.exports.isValid = isValid;
-module.exports.users = users;
 
 
 /*
@@ -100,3 +121,39 @@ module.exports.users = users;
 }
 
 */
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+
+  let isbn = req.params.isbn;
+  
+  // to extract userName from accessToken
+  let token = req.session.authorization['accessToken'];
+  let userName = jwt.verify(token,privateKeys).data;
+
+  //for debugging purposes
+  console.log("@delete review: " + userName +  " " + isbn );
+
+  //user didn't key in any isbn code
+  if(!isbn) return res.status(400).json({message: "No ISBN code was input"});
+
+  //no books was found with the input ISBN
+  if (!books[isbn]) return res.status(400).json({message: "No book with ISBN: "+ isbn + " was found."});
+
+  //check if user has entered any review for the ISBN
+  if(books[isbn].reviews[userName]) {
+
+    delete books[isbn].reviews[userName];
+    return res.status(200).json({message: "Review has been removed."});
+
+  } else {
+
+    return res.status(400).json({message: "Review has been already removed."});
+  }
+
+});
+
+
+
+module.exports.authenticated = regd_users;
+module.exports.isValid = isValid;
+module.exports.users = users;
